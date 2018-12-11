@@ -4,26 +4,26 @@ class GameController {
     this.ThreeScene = ThreeScene; // The scene object from Three.js
     this.ThreeCamera = ThreeCamera; // The camara object from Three.js
     this.player = new Player(this, new Vector3D(5, 10, 5), new Vector3D(0.5, 2, 0.5), "0x00ff00", "", {
-        "speed": 10, // Original was 10
-        "jumpSpeed": 300,
+        "speed": 20, // Original was 10
+        "jumpSpeed": 520,
         "lookSpeed": 15
     });
     this.scenes = [
       {
         "title": "Introduction",
         "objects": [
-          new Block(this, new Vector3D(0, 0, 0), new Vector3D(100, 0.1, 0.1), "0xff0000"), // x axis
-          new Block(this, new Vector3D(0, 0, 0), new Vector3D(0.1, 100, 0.1), "0x00ff00"), // y axis
-          new Block(this, new Vector3D(0, 0, 0), new Vector3D(0.1, 0.1, 100), "0x0000ff"), // z axis
-          new Block(this, new Vector3D(0, 0, 0), new Vector3D(20, 0.5, 20), "0xaaaaaa", "textures/wood_texture.jpg"),
-          new Block(this, new Vector3D(0, -0.5, 0), new Vector3D(80, 0.5, 80), "0xaaaaaa", "textures/iron_texture.jpg"),
-          new Block(this, new Vector3D(0, 10, 8), new Vector3D(20, 20, 0.5), "0xaaaaaa", "textures/wood_texture.jpg"),
-          new Block(this, new Vector3D(0, 10, -8), new Vector3D(20, 20, 0.5), "0xaaaaaa", "textures/wood_texture.jpg"),
-          new Block(this, new Vector3D(8, 10, 0), new Vector3D(0.5, 20, 20), "0xaaaaaa", "textures/wood_texture.jpg"),
-          new Block(this, new Vector3D(5, 20, 5), new Vector3D(12, 0.5, 5), "0xaaaaaa", "textures/wood_texture.jpg"),
-          new Block(this, new Vector3D(2, 0, 2), new Vector3D(2, 0.4, 2), "0xaaaaaa", "textures/iron_texture.jpg", (obj) => { obj.pos.y = 10 * Math.sin(performance.now() / 5000 + 3) + 10.1; obj.vel.y = 20/5 * Math.cos(performance.now() / 5000 + 3); } ),
-          new Block(this, new Vector3D(-20, 0.5, 2), new Vector3D(10, 1, 0.1), "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.pos.z = 20 * Math.sin(performance.now() / 2000 + 3); obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
-          new Block(this, new Vector3D(-12, 0.5, 2), new Vector3D(2, 0.2, 30), "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
+          new Block(this, new Vector3D(0, 0, 0), new Vector3D(100, 0.1, 0.1), 0.9, "0xff0000"), // x axis
+          new Block(this, new Vector3D(0, 0, 0), new Vector3D(0.1, 100, 0.1), 0.9, "0x00ff00"), // y axis
+          new Block(this, new Vector3D(0, 0, 0), new Vector3D(0.1, 0.1, 100), 0.9, "0x0000ff"), // z axis
+          new Block(this, new Vector3D(0, 0, 0), new Vector3D(20, 0.5, 20), 0.9, "0xaaaaaa", "textures/wood_texture.jpg"),
+          new Block(this, new Vector3D(0, -0.5, 0), new Vector3D(80, 0.5, 80), 0.9, "0xaaaaaa", "textures/iron_texture.jpg"),
+          new Block(this, new Vector3D(0, 10, 8), new Vector3D(20, 20, 0.5), 0.9, "0xaaaaaa", "textures/wood_texture.jpg"),
+          new Block(this, new Vector3D(0, 10, -8), new Vector3D(20, 20, 0.5), 0.9, "0xaaaaaa", "textures/wood_texture.jpg"),
+          new Block(this, new Vector3D(8, 10, 0), new Vector3D(0.5, 20, 20), 0.9, "0xaaaaaa", "textures/wood_texture.jpg"),
+          new Block(this, new Vector3D(5, 20, 5), new Vector3D(12, 0.5, 5), 0.9, "0xaaaaaa", "textures/wood_texture.jpg"),
+          new Block(this, new Vector3D(2, 10.3, 2), new Vector3D(2, 0.4, 2), 0.9, "0xaaaaaa", "textures/iron_texture.jpg", (obj) => { obj.vel.y = 10/5 * Math.cos(performance.now() / 5000 + 3); } ),
+          new Block(this, new Vector3D(-20, 0.5, 2), new Vector3D(10, 1, 0.1), 0.9, "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
+          new Block(this, new Vector3D(-12, 0.5, 2), new Vector3D(2, 0.2, 30), 0.9, "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
         ],
         "npcs": [
           this.player,
@@ -45,6 +45,16 @@ class GameController {
       }
     ];
     this.sceneNum = 0;
+    ( () => {
+        for (var i = 0; i < 10; i++) { 
+            this.scenes[this.sceneNum].objects.push(new Block(
+                this, new Vector3D(3*i, i + 20, 14), new Vector3D(2, 1, 2), 0.9, "", "textures/iron_texture.jpg", (obj) => { obj.vel.y = 10 * Math.sin(performance.now() / (1000 + 100*obj.pos.x/3) + 200*obj.pos.x/3); }
+            ));
+            this.scenes[this.sceneNum].objects.push(new Block(
+                this, new Vector3D(2*i, 0.5*i, 16), new Vector3D(2, 0.5, 2), 0.9, "", "textures/wood_texture.jpg"
+            ));
+        }
+    } )();
     
     // Store a clock for physics calculations.
     this.clock = new THREE.Clock();
@@ -95,7 +105,7 @@ class GameController {
 
   update() {
     this.delta = this.clock.getDelta();
-    this.player.update();
+
     var npc;
     for (var i in this.scene.npcs) {
       npc = this.scene.npcs[i];

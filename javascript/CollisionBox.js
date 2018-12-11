@@ -3,7 +3,7 @@ class CollisionBox {
   constructor(parent, render = true) {
     // The collision box is from the center of the parent NPC and extends outward to make a box with dimension according to the size of the parent (x, y, z lengths).
     this.parent = parent; // The object for which the collision box is designed. Whatever it is, it needs two things: a pos vector and a size vector.
-    this.uncollideSteps = 10; // The steps the CollisionBox will binary search to correctly "unstuck" the object.
+    this.uncollideSteps = 20; // The steps the CollisionBox will binary search to correctly "unstuck" the object.
 
     this.render = true;
   }
@@ -64,27 +64,33 @@ class CollisionBox {
         low = mid; // If the middle box is still inside, then the box needs to go out less.
       }
     }
-    // There are only three directions because everything is constrainted to
+    // There are only three directions because everything is constrained to
     // align with the axes. Thus, only one component of the velocity is
     // necessary to extract the object. We test them all.
     var xShifted = this.pos.clone();
     xShifted.x += vel.x * low;
     if (!CollisionBox.isInside(xShifted, this.size, other.pos, other.size)) {
-        this.parent.vel.x = 0;
+        this.parent.vel.x = other.vel.x;
+        this.parent.vel.y = (this.parent.vel.y - other.vel.y)*(other.friction !== undefined ? other.friction : 1) + other.vel.y;
+        this.parent.vel.z = (this.parent.vel.z - other.vel.z)*(other.friction !== undefined ? other.friction : 1) + other.vel.z;
         this.parent.pos = xShifted;
         return false;
     }
     var yShifted = this.pos.clone();
     yShifted.y += vel.y * low;
     if (!CollisionBox.isInside(yShifted, this.size, other.pos, other.size)) {
-        this.parent.vel.y = 0;
+        this.parent.vel.y = other.vel.y;
+        this.parent.vel.x = (this.parent.vel.x - other.vel.x)*(other.friction !== undefined ? other.friction : 1) + other.vel.x;
+        this.parent.vel.z = (this.parent.vel.z - other.vel.z)*(other.friction !== undefined ? other.friction : 1) + other.vel.z;
         this.parent.pos = yShifted;
         return true; // Only return true if the object lands on the top of a surface.
     }
     var zShifted = this.pos.clone();
     zShifted.z += vel.z * low;
     if (!CollisionBox.isInside(zShifted, this.size, other.pos, other.size)) {
-        this.parent.vel.z = 0;
+        this.parent.vel.z = other.vel.z;
+        this.parent.vel.x = (this.parent.vel.x - other.vel.x)*(other.friction !== undefined ? other.friction : 1) + other.vel.x;
+        this.parent.vel.y = (this.parent.vel.y - other.vel.y)*(other.friction !== undefined ? other.friction : 1) + other.vel.y;
         this.parent.pos = zShifted;
         return false;
     }

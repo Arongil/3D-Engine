@@ -19,8 +19,6 @@ class NPC {
 
   physics() {
     this.vel.y += PHYSICS.GRAVITY * GC.delta;
-    this.vel.x *= PHYSICS.FRICTION;
-    this.vel.z *= PHYSICS.FRICTION;
     this.vel.y *= PHYSICS.AIR_RESISTANCE;
     this.pos.shift(this.vel.getScaled(GC.delta));
     this.GC.checkCollision(this);

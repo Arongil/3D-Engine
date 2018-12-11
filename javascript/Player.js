@@ -37,15 +37,20 @@ class Player extends NPC {
         // Update orientation.
         var target = this.pos.getShifted(Vector3D.FromSpherical(this.theta, this.phi, 1));
         camera.lookAt(target.x, target.y, target.z);
+        // Update FOV.
+        camera.fov = 90 * (0.7 + 0.10 / (1 + Math.exp(-0.1 * (this.vel.x**2 + this.vel.z**2) - 1)));
+        camera.updateProjectionMatrix();
     }
     
     physics() {
         this.updateControls();
 
         this.vel.y += PHYSICS.GRAVITY * GC.delta;
-        this.vel.x *= PHYSICS.FRICTION;
-        this.vel.z *= PHYSICS.FRICTION;
         this.vel.y *= PHYSICS.AIR_RESISTANCE;
+        if (!this.justCollided) {
+            this.vel.x *= PHYSICS.FRICTION;
+            this.vel.z *= PHYSICS.FRICTION;
+        }
         this.pos.shift(this.vel.getScaled(GC.delta));
         this.justCollided = false;
         this.justCollided = this.GC.checkCollision(this);
