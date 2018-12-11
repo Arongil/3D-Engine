@@ -11,17 +11,18 @@ class Player extends NPC {
         this.theta = 0;
         this.phi = 0;
         this.maxCraneAngle = 89; // The highest degree the player can look up at.
-        this.justCollided = false;
         this.spawnPoint = pos.clone(); // Where the player will respawn if they fall out of the world.
     }
 
     updateControls() {
         // Update position.
-        if (Keys.space && this.justCollided) this.vel.y += this.jumpSpeed * GC.delta;
-        if (Keys.w) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, this.speed * this.GC.delta) );
-        if (Keys.s) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, -this.speed * this.GC.delta) ); 
-        if (Keys.a) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, this.speed * this.GC.delta).getRotated(PI/2, UP) );
-        if (Keys.d) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, -this.speed * this.GC.delta).getRotated(PI/2, UP) ); 
+        if (this.justCollided) { // The player can't move if they aren't touching ground.
+            if (Keys.space) this.vel.y += this.jumpSpeed * GC.delta;
+            if (Keys.w) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, this.speed * this.GC.delta) );
+            if (Keys.s) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, -this.speed * this.GC.delta) ); 
+            if (Keys.a) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, this.speed * this.GC.delta).getRotated(PI/2, UP) );
+            if (Keys.d) this.vel.shift( Vector3D.FromSpherical(PI/2, this.phi, -this.speed * this.GC.delta).getRotated(PI/2, UP) ); 
+        }
         // Update orientation.
         this.lat -= (Mouse.x - Mouse.px) * this.lookSpeed * GC.delta;
         this.lon += (Mouse.y - Mouse.py) * this.lookSpeed * GC.delta;
@@ -45,15 +46,7 @@ class Player extends NPC {
     physics() {
         this.updateControls();
 
-        this.vel.y += PHYSICS.GRAVITY * GC.delta;
-        this.vel.y *= PHYSICS.AIR_RESISTANCE;
-        if (!this.justCollided) {
-            this.vel.x *= PHYSICS.FRICTION;
-            this.vel.z *= PHYSICS.FRICTION;
-        }
-        this.pos.shift(this.vel.getScaled(GC.delta));
-        this.justCollided = false;
-        this.justCollided = this.GC.checkCollision(this);
+        super.physics();
         if (this.pos.y < PHYSICS.OUT_OF_WORLD) {
             this.pos = this.spawnPoint.clone();
         }

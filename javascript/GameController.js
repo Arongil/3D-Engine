@@ -24,6 +24,7 @@ class GameController {
           new Block(this, new Vector3D(2, 10.3, 2), new Vector3D(2, 0.4, 2), 0.9, "0xaaaaaa", "textures/iron_texture.jpg", (obj) => { obj.vel.y = 10/5 * Math.cos(performance.now() / 5000 + 3); } ),
           new Block(this, new Vector3D(-20, 0.5, 2), new Vector3D(10, 1, 0.1), 0.9, "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
           new Block(this, new Vector3D(-12, 0.5, 2), new Vector3D(2, 0.2, 30), 0.9, "0xaaaaaa", "textures/wood_texture.jpg", (obj) => { obj.vel.z = 20/2 * Math.cos(performance.now() / 2000 + 3); } ),
+          new Block(this, new Vector3D(2, 0.5, -20), new Vector3D(18, 0.2, 18), 0.95, "0xaaaaaa", "textures/ice_texture.jpg"),
         ],
         "npcs": [
           this.player,
