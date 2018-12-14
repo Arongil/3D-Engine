@@ -47,7 +47,7 @@ class GameController {
     ];
     this.sceneNum = 0;
     ( () => {
-        for (var i = 0; i < 10; i++) { 
+        for (var i = 0; i < 20; i++) { 
             this.scenes[this.sceneNum].objects.push(new Block(
                 this, new Vector3D(3*i, i + 20, 14), new Vector3D(2, 1, 2), 0.9, "", "textures/iron_texture.jpg", (obj) => { obj.vel.y = 10 * Math.sin(performance.now() / (1000 + 100*obj.pos.x/3) + 200*obj.pos.x/3); }
             ));
@@ -60,6 +60,9 @@ class GameController {
     // Store a clock for physics calculations.
     this.clock = new THREE.Clock();
     this.delta;
+    this.maxStep = (1/10) * 1000; // The biggest timestep allowed. When the game lags,
+    // it will take many steps of this size once it recovers instead of one huge step.
+    this.maxFrames = 10; // The most frames it will attempt to recover in one frame.
   }
   
   get scene() {
@@ -104,18 +107,27 @@ class GameController {
     }
   }
 
-  update() {
-    this.delta = this.clock.getDelta();
+  integrate() {
+      var npc;
+      for (var i in this.scene.npcs) {
+          npc = this.scene.npcs[i];
+          npc.update();
+      }
+      var obj;
+      for (var i in this.scene.objects) {
+          obj = this.scene.objects[i];
+          obj.update();
+      }
+  }
 
-    var npc;
-    for (var i in this.scene.npcs) {
-      npc = this.scene.npcs[i];
-      npc.update();
-    }
-    var obj;
-    for (var i in this.scene.objects) {
-      obj = this.scene.objects[i];
-      obj.update();
+  update() {
+    var frameTime = this.clock.getDelta(), frames = 0;
+    
+    while (frameTime > 0 && frames < this.maxFrames) {
+        this.delta = Math.min(frameTime, this.maxStep);
+        this.integrate();
+        frameTime -= this.delta;
+        frames++;
     }
   }
   
